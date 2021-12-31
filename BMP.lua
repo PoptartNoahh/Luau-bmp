@@ -43,13 +43,11 @@ function bmp.Parse(file)
 			local rgb, binary = {}, get_binary(file_seek(position + 2)) .. get_binary(file_seek(position + 1))
 			for i = 0, 2 do
 				local start = 2 + (i * 5)
-				local a = binary:sub(start, start + 4)
-				local b, c = a:reverse(), 0
-				for j = 1, b:len() do
-					c += (if b:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
+				local a, b = binary:sub(start, start + 4), 0
+				for j = 1, a:len() do
+					b += (if a:reverse():sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
 				end
-				c /= 31
-				rgb[i + 1] = c
+				rgb[i + 1] = b / 31
 			end
 			return Color3.new(unpack(rgb))
 		end,
