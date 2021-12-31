@@ -65,8 +65,7 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
-			local coordinates = self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)
-			self.image[coordinates] = {color, alpha}
+			self.image[self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)] = {color, alpha}
 		end
 	else
 		error("Supported bitmap formats: 32bpp, 24bpp, 16bpp")
