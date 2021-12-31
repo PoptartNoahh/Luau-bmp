@@ -44,7 +44,7 @@ function bmp.Parse(file)
 			for i = 0, 2 do
 				local start = 2 + (i * 5)
 				local a, b = binary:sub(start, start + 4), 0
-				for j = 1, a:len() do
+				for j = 1, 5 do
 					b += (if a:reverse():sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
 				end
 				rgb[i + 1] = b / 31
