@@ -25,7 +25,7 @@ function bmp.Parse(file)
 
 	local bitmap_encoding = {
 		[32] = function(position)
-			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4)
+			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4) or 1
 		end,
 		[24] = function(position)
 			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1))
@@ -43,9 +43,9 @@ function bmp.Parse(file)
 			local rgb, binary = {}, get_binary(file_seek(position + 2)) .. get_binary(file_seek(position + 1))
 			for i = 0, 2 do
 				local start = 2 + (i * 5)
-				local a, b = binary:sub(start, start + 4), 0
+				local a, b = binary:sub(start, start + 4):reverse(), 0
 				for j = 1, 5 do
-					b += (if a:reverse():sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
+					b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
 				end
 				rgb[i + 1] = b / 31
 			end
@@ -63,10 +63,7 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
-			if alpha then
-				alpha /= 255
-			end
-			self.image[self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)] = {color, alpha}
+			self.image[self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)] = {color, if alpha then alpha / 255 else 1}
 		end
 	else
 		error("Supported bitmap formats: 32bpp, 24bpp, 16bpp")
