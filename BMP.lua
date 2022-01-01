@@ -1,4 +1,4 @@
---PoptartNoahh
+--PoptartNoahh & Sceptive
 
 bmp = {}
 bmp.__index = bmp
@@ -17,6 +17,9 @@ function bmp.Parse(file)
 	self.width, self.height = make_header(0x12), make_header(0x16)
 	self.bpp = make_header(0x1C)
 	self.image = {}
+	for x = 1,self.width do
+		self.image[x] = {}
+	end
 	self.packet_size = self.bpp / 8
 	self.padding = bit32.band(self.width, 3)
 	if self.bpp ~= 24 then
@@ -63,14 +66,14 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
-			self.image[self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)] = {color, if alpha then alpha / 255 else 1}
+			self.image[self.width - (pixels - 1) % self.width][math.ceil(pixels / self.width)] = {color, alpha and alpha / 255 or 1}
 		end
 	else
 		error("Supported bitmap formats: 32bpp, 24bpp, 16bpp")
 	end
 
 	self.Pixel = function(x, y)
-		local pixel = self.image[x .. " " .. y]
+		local pixel = self.image[x][y]
 		if pixel then
 			return unpack(pixel)
 		end
@@ -97,8 +100,8 @@ return bmp
 
 --[[
 	local Image = BMP.Parse(file)
-	for x = 0, Image.Width do
-		for y = 0, Image.Height do
+	for x = 1, Image.Width do
+		for y = 1, Image.Height do
 			local color, alpha = Image.Pixel(x, y)
 		end
 	end
