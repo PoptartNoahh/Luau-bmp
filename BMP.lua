@@ -63,6 +63,9 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
+			if alpha then
+				alpha /= 255
+			end
 			self.image[self.width - (pixels - 1) % self.width .. " " .. math.ceil(pixels / self.width)] = {color, alpha}
 		end
 	else
