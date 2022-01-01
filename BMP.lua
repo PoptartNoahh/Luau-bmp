@@ -45,7 +45,7 @@ function bmp.Parse(file)
 			end
 			local rgb, binary = {}, get_binary(file_seek(position + 2)) .. get_binary(file_seek(position + 1))
 			for i = 0, 2 do
-				local start = 2 + (i * 5)
+				local start = 2 + i * 5
 				local a, b = binary:sub(start, start + 4):reverse(), 0
 				for j = 1, 5 do
 					b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
