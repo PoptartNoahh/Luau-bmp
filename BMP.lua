@@ -17,7 +17,7 @@ function bmp.Parse(file)
 	self.width, self.height = make_header(0x12), make_header(0x16)
 	self.bpp = make_header(0x1C)
 	self.image = {}
-	for x = 1,self.width do
+	for x = 1, self.width do
 		self.image[x] = {}
 	end
 	self.packet_size = self.bpp / 8
@@ -103,6 +103,9 @@ return bmp
 	for x = 1, Image.Width do
 		for y = 1, Image.Height do
 			local color, alpha = Image.Pixel(x, y)
+			if alpha then
+				local transparency = 1 - alpha
+			end
 		end
 	end
 ]]
