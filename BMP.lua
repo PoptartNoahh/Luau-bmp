@@ -7,7 +7,7 @@ function bmp.Parse(file)
 	local self = {}
 	local contents = file:GetBinaryContents()
 	local function file_seek(position)
-		return contents:sub(position):byte()
+		return contents:byte(position)
 	end
 	local function make_header(offset)
 		return tonumber("0x" .. ("%x"):format(file_seek(offset + 2)) .. ("%x"):format(file_seek(offset + 1)))
