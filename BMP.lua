@@ -28,7 +28,7 @@ function bmp.Parse(file)
 
 	local bitmap_encoding = {
 		[32] = function(position)
-			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4) or 1
+			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4) or 255
 		end,
 		[24] = function(position)
 			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1))
