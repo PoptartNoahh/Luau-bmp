@@ -50,7 +50,7 @@ function bmp.Parse(file)
 		[4] = function(position)
 			local byte = binary.get(file_seek(position + 1))
 			return self.palette[(position % math.floor(position) == 0 and binary.reverse(byte:sub(1, 4)) or binary.reverse(byte:sub(5, 9))) + 1]
-		end,
+		end
 	}
 
 	local get_encoding = bitmap_encoding[self.bpp]
@@ -109,7 +109,7 @@ binary = {
 			b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
 		end
 		return b
-	end,
+	end
 }
 
 return bmp
