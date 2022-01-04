@@ -37,28 +37,19 @@ function bmp.Parse(file)
 			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1))
 		end,
 		[16] = function(position)
-			local get_binary = function(a)
-				local b = ""
-				while a ~= 0 do
-					b = (a % 2) .. b
-					a = math.floor(a / 2)
-				end
-				b = ("0"):rep(8 - #b) .. b
-				return b
-			end
-			local rgb, binary = {}, get_binary(file_seek(position + 2)) .. get_binary(file_seek(position + 1))
+			local rgb, byte = {}, binary.get(file_seek(position + 2)) .. binary.get(file_seek(position + 1))
 			for i = 0, 2 do
-				local start = 2 + i * 5
-				local a, b = binary:sub(start, start + 4):reverse(), 0
-				for j = 1, 5 do
-					b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
-				end
-				rgb[i + 1] = b / 31
+				local offset = 2 + i * 5
+				rgb[i + 1] = binary.reverse(byte:sub(offset, offset + 4)) / 31
 			end
 			return Color3.new(unpack(rgb))
 		end,
 		[8] = function(position)
 			return self.palette[file_seek(position + 1) + 1]
+		end,
+		[4] = function(position)
+			local byte = binary.get(file_seek(position + 1))
+			return self.palette[(position % math.floor(position) == 0 and binary.reverse(byte:sub(1, 4)) or binary.reverse(byte:sub(5, 9))) + 1]
 		end,
 	}
 
@@ -72,10 +63,11 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
+			--print(i - self.bitmap_offset)
 			self.image[self.width - (pixels - 1) % self.width][math.ceil(pixels / self.width)] = {color, alpha and alpha / 255 or 1}
 		end
 	else
-		error("Supported bitmap formats: 32-bit, 24-bit, 16-bit, 8-bit")
+		error("Supported bitmap formats: 32-bit, 24-bit, 16-bit, 8-bit, 4-bit")
 	end
 
 	self.Pixel = function(x, y)
@@ -101,6 +93,25 @@ function bmp.Parse(file)
 		}
 	)
 end
+
+binary = {
+	get = function(n)
+		local b = ""
+		while n ~= 0 do
+			b = (n % 2) .. b
+			n = math.floor(n / 2)
+		end
+		b = ("0"):rep(8 - #b) .. b
+		return b
+	end,
+	reverse = function(s)
+		local a, b = s:reverse(), 0
+		for j = 1, 5 do
+			b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
+		end
+		return b
+	end,
+}
 
 return bmp
 
