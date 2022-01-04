@@ -7,7 +7,7 @@ function bmp.Parse(file)
 	local self = {}
 	local contents = file:GetBinaryContents()
 	local function file_seek(position)
-		return contents:byte(position)
+		return contents:sub(position):byte()
 	end
 	local function make_header(offset)
 		return tonumber("0x" .. ("%x"):format(file_seek(offset + 2)) .. ("%x"):format(file_seek(offset + 1)))
@@ -21,14 +21,17 @@ function bmp.Parse(file)
 		self.image[x] = {}
 	end
 	self.packet_size = self.bpp / 8
-	self.padding = bit32.band(self.width, 3)
-	if self.bpp ~= 24 then
-		self.padding = if bit32.band(self.width, 3) % 2 == 0 then 0 else 2
+	self.padding = (4 - (self.width * self.packet_size) % 4) % 4
+	self.palette = {}
+	if self.bpp <= 8 then
+		for i = 0, 2 ^ self.bpp - 1 do
+			local offset = 0x36 + 4 * i + 1
+			table.insert(self.palette, Color3.fromRGB(file_seek(offset + 2), file_seek(offset + 1), file_seek(offset)))
+		end
 	end
-
 	local bitmap_encoding = {
 		[32] = function(position)
-			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4) or 255
+			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1)), file_seek(position + 4) or 1
 		end,
 		[24] = function(position)
 			return Color3.fromRGB(file_seek(position + 3), file_seek(position + 2), file_seek(position + 1))
@@ -54,6 +57,9 @@ function bmp.Parse(file)
 			end
 			return Color3.new(unpack(rgb))
 		end,
+		[8] = function(position)
+			return self.palette[file_seek(position + 1) + 1]
+		end,
 	}
 
 	local get_encoding = bitmap_encoding[self.bpp]
@@ -69,7 +75,7 @@ function bmp.Parse(file)
 			self.image[self.width - (pixels - 1) % self.width][math.ceil(pixels / self.width)] = {color, alpha and alpha / 255 or 1}
 		end
 	else
-		error("Supported bitmap formats: 32bpp, 24bpp, 16bpp")
+		error("Supported bitmap formats: 32-bit, 24-bit, 16-bit, 8-bit")
 	end
 
 	self.Pixel = function(x, y)
