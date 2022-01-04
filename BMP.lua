@@ -63,7 +63,6 @@ function bmp.Parse(file)
 			if pixels % self.width == 0 then
 				i += self.padding
 			end
-			--print(i - self.bitmap_offset)
 			self.image[self.width - (pixels - 1) % self.width][math.ceil(pixels / self.width)] = {color, alpha and alpha / 255 or 1}
 		end
 	else
