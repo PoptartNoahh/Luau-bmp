@@ -50,6 +50,9 @@ function bmp.Parse(file)
 		[4] = function(position)
 			local byte = binary.get(file_seek(position + 1))
 			return self.palette[(position % math.floor(position) == 0 and binary.reverse(byte:sub(1, 4)) or binary.reverse(byte:sub(5, 9))) + 1]
+		end,
+		[1] = function(position)
+			return binary.get(file_seek(position + 1)):byte((position % math.floor(position) * 8) + 1) == 49 and Color3.new(1, 1, 1) or Color3.new()
 		end
 	}
 
