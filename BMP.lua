@@ -69,7 +69,7 @@ function bmp.Parse(file)
 			self.image[self.width - (pixels - 1) % self.width][math.ceil(pixels / self.width)] = {color, alpha and alpha / 255 or 1}
 		end
 	else
-		error("Supported bitmap formats: 32-bit, 24-bit, 16-bit, 8-bit, 4-bit")
+		error("Supported bitmap formats: 32-bit, 24-bit, 16-bit, 8-bit, 4-bit, 1-bit")
 	end
 
 	self.Pixel = function(x, y)
