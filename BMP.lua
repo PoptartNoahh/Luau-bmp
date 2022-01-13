@@ -103,13 +103,12 @@ binary = {
 			b = (n % 2) .. b
 			n = math.floor(n / 2)
 		end
-		b = ("0"):rep(8 - #b) .. b
-		return b
+		return ("0"):rep(8 - #b) .. b
 	end,
 	reverse = function(s)
 		local a, b = s:reverse(), 0
-		for j = 1, 5 do
-			b += (if a:sub(j, j) == "1" then 1 else 0) * math.pow(2, j - 1)
+		for i = 1, 5 do
+			b += (if a:sub(i, i) == "1" then 1 else 0) * math.pow(2, i - 1)
 		end
 		return b
 	end
