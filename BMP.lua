@@ -97,7 +97,7 @@ function bmp.Parse(file)
 end
 
 binary = {
-	get = function(n)
+	get = function(n) : number
 		local b = ""
 		while n ~= 0 do
 			b = (n % 2) .. b
@@ -105,7 +105,7 @@ binary = {
 		end
 		return ("0"):rep(8 - #b) .. b
 	end,
-	reverse = function(s)
+	reverse = function(s) : string
 		local a, b = s:reverse(), 0
 		for i = 1, 5 do
 			b += (if a:sub(i, i) == "1" then 1 else 0) * math.pow(2, i - 1)
