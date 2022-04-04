@@ -1,5 +1,4 @@
-# Roblox-BMP-Parser
-A simple BMP image parser for Roblox.
+A simple BMP image parser.
 
 Supports 32-bit, 24-bit, 16-bit, 8-bit 4-bit and 1-bit formats.
 
