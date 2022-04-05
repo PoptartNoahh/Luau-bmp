@@ -3,16 +3,41 @@
 bmp = {}
 bmp.__index = bmp
 
+binary = {
+	get = function(n: number)
+		local s = ""
+		while n ~= 0 do
+			s = (n % 2) .. s
+			n = math.floor(n / 2)
+		end
+		s = ("0"):rep(8 - #s) .. s
+		return s
+	end,
+	reverse = function(s: string)
+		local n = 0
+		s = s:reverse()
+		for i = 1, s:len() do
+			n += (if s:byte() == 49 then 1 else 0) * math.pow(2, i - 1)
+		end
+		return n
+	end
+}
+
 function bmp.Parse(file)
 	local self = {}
-	local contents = file:GetBinaryContents()
+	local contents = file
+	if typeof(file) == "Instance" then
+		if file:IsA("File") then
+			contents = file:GetBinaryContents()
+		end
+	end
 	local function file_seek(position)
 		return contents:byte(position)
 	end
 	local function make_header(offset)
 		return tonumber("0x" .. ("%x"):format(file_seek(offset + 2)) .. ("%x"):format(file_seek(offset + 1)))
 	end
-	self.file_size, self.file_name = file.Size, file.Name
+	self.file_size = make_header(0x02)
 	self.bitmap_offset = make_header(0x0A)
 	self.width, self.height = make_header(0x12), make_header(0x16)
 	self.bpp = make_header(0x1C)
@@ -75,7 +100,7 @@ function bmp.Parse(file)
 	self.Pixel = function(x, y)
 		local pixel = self.image[x][y]
 		if pixel then
-			return unpack(pixel)
+			return unpack(pixel) --color, alpha
 		end
 	end
 
@@ -84,8 +109,6 @@ function bmp.Parse(file)
 			__index = function(_, index)
 				if index == "Size" then
 					return self.file_size
-				elseif index == "Name" then
-					return self.file_name
 				elseif index == "Width" then
 					return self.width
 				elseif index == "Height" then
@@ -95,24 +118,6 @@ function bmp.Parse(file)
 		}
 	)
 end
-
-binary = {
-	get = function(n) : number
-		local b = ""
-		while n ~= 0 do
-			b = (n % 2) .. b
-			n = math.floor(n / 2)
-		end
-		return ("0"):rep(8 - #b) .. b
-	end,
-	reverse = function(s) : string
-		local a, b = s:reverse(), 0
-		for i = 1, 5 do
-			b += (if a:sub(i, i) == "1" then 1 else 0) * math.pow(2, i - 1)
-		end
-		return b
-	end
-}
 
 return bmp
 
