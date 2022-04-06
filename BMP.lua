@@ -10,7 +10,6 @@ binary = {
 			s = (n % 2) .. s
 			n = math.floor(n / 2)
 		end
-		s = ("0"):rep(8 - #s) .. s
 		return s
 	end,
 	reverse = function(s: string)
